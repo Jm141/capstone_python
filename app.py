@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this in production
+app.secret_key = 'your_secret_key'  
 DATABASE = 'users.db'
 
 def init_db():
@@ -81,7 +81,12 @@ def login():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html', first_name=session.get('first_name'))
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    c.execute('SELECT id, first_name, middle_name, last_name, birthday, age, address, email FROM users')
+    users = c.fetchall()
+    conn.close()
+    return render_template('dashboard.html', first_name=session.get('first_name'), users=users)
 
 @app.route('/logout')
 def logout():
