@@ -1,0 +1,153 @@
+body {
+    background: #f0f1f3;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-bg {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f1f3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.animated-fade-in {
+    animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-box {
+    width: 400px;
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(60,60,60,0.12);
+    border: none;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-circle {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #6366f1 60%, #818cf8 100%);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 60px;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+    margin-bottom: 8px;
+    animation: popIn 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    80% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+.login-logo h2 {
+    margin: 0;
+    color: #6366f1;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.login-card-body {
+    padding: 2rem;
+}
+
+.login-box-msg {
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.input-group .form-control {
+    background: #f7f7f7;
+    border: 1px solid #d1d3d4;
+    color: #333;
+    transition: border 0.3s, box-shadow 0.3s, background 0.3s, font-size 0.3s, padding 0.3s;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    height: 48px;
+    box-shadow: none;
+}
+
+.input-group .form-control:focus {
+    border: 2.5px solid #7c3aed;
+    box-shadow: 0 0 0 4px #ede9fe, 0 2px 12px rgba(124,58,237,0.10);
+    background: #ede9fe;
+    color: #333;
+    outline: none;
+    font-size: 1.13rem;
+    padding: 0.95rem 1.2rem;
+}
+
+.input-group-text {
+    background: #e0e0e0;
+    border: 1px solid #d1d3d4;
+}
+
+.btn-primary, .login-btn-animate {
+    background: #6366f1;
+    border: none;
+    color: #fff;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s, padding 0.2s, font-size 0.2s;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+    padding: 0.85rem 0;
+    font-size: 1.13rem;
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+    margin-top: 0.2rem;
+}
+
+.btn-primary:hover, .login-btn-animate:hover, .btn-primary:focus, .login-btn-animate:focus {
+    background: #4f46e5;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+    outline: none;
+    border: none;
+}
+
+.btn-primary:active, .login-btn-animate:active {
+    background: #4338ca;
+    outline: none;
+    border: none;
+}
+
+.alert {
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+input {
+    border-radius: 8px;
+    width: 100%;
+}
+.close {
+    color: #888;
+    opacity: 1;
+} 
