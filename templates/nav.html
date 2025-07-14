@@ -21,6 +21,37 @@
                         <p>Add User</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/activity" class="nav-link">
+                        <i class="nav-icon fas fa-bars"></i>
+                        <p>Activity Log</p>
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a href="/sales" class="nav-link">
+                        <i class="nav-icon fas fa-cash-register"></i>
+                        <p>Sales</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/inventory" class="nav-link">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Inventory</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/customers" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Customers</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/reports" class="nav-link">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Reports</p>
+                    </a>
+                </li>
                 {% endif %}
                 <li class="nav-item">
                     <a href="/logout" class="nav-link">
@@ -33,4 +64,4 @@
         <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
-</aside> 
+</aside>

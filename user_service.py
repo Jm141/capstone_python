@@ -6,7 +6,6 @@ DATABASE = 'users.db'
 def migrate_db():
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
-    # Add is_approved column if it doesn't exist
     c.execute("PRAGMA table_info(users)")
     columns = [col[1] for col in c.fetchall()]
     if 'is_approved' not in columns:
@@ -34,6 +33,32 @@ def init_db():
             is_admin INTEGER DEFAULT 0
         )
     ''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS product (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        sku TEXT UNIQUE NOT NULL,
+        quantity INTEGER NOT NULL,
+        price REAL NOT NULL
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        total REAL NOT NULL
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS sale_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sale_id INTEGER,
+        product_id INTEGER,
+        quantity INTEGER NOT NULL,
+        price REAL NOT NULL,
+        FOREIGN KEY (sale_id) REFERENCES sales(id),
+        FOREIGN KEY (product_id) REFERENCES product(id)
+    )'''
+    )
+
     conn.commit()
     conn.close()
     migrate_db()
@@ -99,4 +124,4 @@ def set_user_admin(user_id, admin=True):
     c = conn.cursor()
     c.execute('UPDATE users SET is_admin=? WHERE id=?', (1 if admin else 0, user_id))
     conn.commit()
-    conn.close() 
+    conn.close()

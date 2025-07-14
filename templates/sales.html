@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Sales (POS)</h2>
+    <div class="row">
+        <!-- Product Search/Selection -->
+        <div class="col-md-6">
+            <h4>Select Product</h4>
+            <form id="add-product-form" method="post">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="product_search" placeholder="Search product...">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" name="quantity" placeholder="Quantity" min="1" value="1">
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+        </div>
+        <!-- Cart -->
+        <div class="col-md-6">
+            <h4>Cart</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.subtotal }}</td>
+                        <td>
+                            <form method="post" action="/remove_from_cart">
+                                <input type="hidden" name="product_id" value="{{ item.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="mb-3">
+                <strong>Total: ${{ cart_total }}</strong>
+            </div>
+            <form method="post" action="/checkout">
+                <button type="submit" class="btn btn-success">Checkout</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
