@@ -40,6 +40,7 @@ def staff_required(f):
 def home():
     return redirect(url_for('login'))
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -157,10 +158,6 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route('/activity', methods=['GET'])
-@login_required
-def activity_log():
-    return render_template('activity_log.html')
 
 def render_admin_page(page):
     if not session.get('is_admin'):
@@ -233,7 +230,12 @@ def inventory():
         {'id': p[0], 'name': p[1], 'sku': p[2], 'quantity': p[3], 'price': p[4]} for p in products
     ]
     return render_template('inventory.html', products=products)
-
+# add route for activity_log.html
+@app.route('/activity')
+@login_required
+def activity_log():
+    # activities = user_service.get_activity_log()
+    return render_template('activity_log.html')
 @app.route('/customers')
 @login_required
 def customers():
