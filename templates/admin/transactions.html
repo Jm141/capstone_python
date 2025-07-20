@@ -1,0 +1,60 @@
+{% extends "base_pos.html" %}
+
+{% block title %}Transactions - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-receipt"></i> Transaction History
+        </h1>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> All Transactions
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if sales %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in sales %}
+                            <tr>
+                                <td>#{{ sale[0] }}</td>
+                                <td>{{ sale[1] }}</td>
+                                <td>{{ sale[2] or 'Walk-in Customer' }}</td>
+                                <td>₱{{ "%.2f"|format(sale[3]) }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin_transaction_detail', sale_id=sale[0]) }}" 
+                                       class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No transactions yet</h5>
+                    <p class="text-muted">Transactions will appear here once customers start making purchases.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

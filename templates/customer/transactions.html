@@ -1,0 +1,104 @@
+{% extends "base_pos.html" %}
+
+{% block title %}My Orders - Sari-Sari Store POS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-history"></i> My Order History
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{{ url_for('customer_purchase') }}" class="btn btn-primary">
+                <i class="fas fa-shopping-cart"></i> New Order
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-receipt"></i> Order History
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if sales %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in sales %}
+                            <tr>
+                                <td>
+                                    <strong>#{{ sale[0] }}</strong>
+                                </td>
+                                <td>{{ sale[1] }}</td>
+                                <td>
+                                    <span class="h6 text-primary">₱{{ "%.2f"|format(sale[3]) }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Completed
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('customer_transaction_detail', sale_id=sale[0]) }}" 
+                                       class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Orders</h6>
+                                <h3 class="text-primary">{{ sales|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Spent</h6>
+                                <h3 class="text-success">₱{{ "%.2f"|format(sales|sum(attribute=3)) }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Average Order</h6>
+                                <h3 class="text-info">₱{{ "%.2f"|format((sales|sum(attribute=3)) / sales|length if sales else 0) }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No orders yet</h5>
+                    <p class="text-muted">Start shopping to see your order history here.</p>
+                    <a href="{{ url_for('customer_purchase') }}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Start Shopping
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

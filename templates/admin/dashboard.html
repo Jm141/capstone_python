@@ -1,0 +1,177 @@
+{% extends "base_pos.html" %}
+
+{% block title %}Admin Dashboard - Sari-Sari Store POS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{{ url_for('admin_add_user') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-user-plus"></i> Add User
+                </a>
+                <a href="{{ url_for('admin_add_product') }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Add Product
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ user_count }}</h4>
+                        <p class="mb-0">Total Users</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ product_count }}</h4>
+                        <p class="mb-0">Total Products</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-boxes fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ sales_count }}</h4>
+                        <p class="mb-0">Total Transactions</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-receipt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">₱{{ "%.2f"|format(sales|sum(attribute=3) if sales else 0) }}</h4>
+                        <p class="mb-0">Total Revenue</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock"></i> Recent Transactions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if sales %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sale in sales[:10] %}
+                                    <tr>
+                                        <td>#{{ sale[0] }}</td>
+                                        <td>{{ sale[1] }}</td>
+                                        <td>{{ sale[2] or 'Walk-in Customer' }}</td>
+                                        <td>₱{{ "%.2f"|format(sale[3]) }}</td>
+                                        <td>
+                                            <a href="{{ url_for('admin_transaction_detail', sale_id=sale[0]) }}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('admin_transactions') }}" class="btn btn-primary">
+                                View All Transactions
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No transactions yet</h5>
+                            <p class="text-muted">Transactions will appear here once customers start making purchases.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_add_user') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-user-plus"></i><br>
+                                Add New User
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_add_product') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-plus"></i><br>
+                                Add New Product
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-users"></i><br>
+                                Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_products') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-boxes"></i><br>
+                                Manage Products
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

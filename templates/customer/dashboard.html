@@ -1,0 +1,235 @@
+{% extends "base_pos.html" %}
+
+{% block title %}Customer Dashboard - Sari-Sari Store POS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-home"></i> Welcome to Sari-Sari Store
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{{ url_for('customer_purchase') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-shopping-cart"></i> Start Shopping
+                </a>
+                <a href="{{ url_for('customer_products') }}" class="btn btn-sm btn-info">
+                    <i class="fas fa-boxes"></i> View Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">
+                        <i class="fas fa-store text-primary"></i> Welcome to Our Store!
+                    </h4>
+                    <p class="card-text">
+                        Hello <strong>{{ session.get('first_name', 'Customer') }}</strong>! 
+                        Browse our products and place your orders. We have a wide selection of items available for purchase.
+                    </p>
+                    <a href="{{ url_for('customer_purchase') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-cart"></i> Start Shopping Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ product_count }}</h4>
+                        <p class="mb-0">Available Products</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-boxes fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ sales_count }}</h4>
+                        <p class="mb-0">Your Orders</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-shopping-bag fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">₱{{ "%.2f"|format(sales|sum(attribute=3) if sales else 0) }}</h4>
+                        <p class="mb-0">Total Spent</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Products -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i> Featured Products
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if products %}
+                        <div class="row">
+                            {% for product in products[:6] %}
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                                        <h6 class="card-title">{{ product[1] }}</h6>
+                                        <p class="card-text text-muted">SKU: {{ product[2] }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="h5 text-primary mb-0">₱{{ "%.2f"|format(product[4]) }}</span>
+                                            <span class="badge bg-{{ 'success' if product[3] > 10 else 'warning' if product[3] > 0 else 'danger' }}">
+                                                {{ product[3] }} in stock
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{{ url_for('customer_purchase') }}" class="btn btn-outline-primary btn-sm w-100">
+                                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('customer_products') }}" class="btn btn-primary">
+                                View All Products
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No products available</h5>
+                            <p class="text-muted">Please check back later for available products.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history"></i> Your Recent Orders
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if sales %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sale in sales[:5] %}
+                                    <tr>
+                                        <td>#{{ sale[0] }}</td>
+                                        <td>{{ sale[1] }}</td>
+                                        <td>₱{{ "%.2f"|format(sale[3]) }}</td>
+                                        <td>
+                                            <span class="badge bg-success">Completed</span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('customer_transaction_detail', sale_id=sale[0]) }}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('customer_transactions') }}" class="btn btn-primary">
+                                View All Orders
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No orders yet</h5>
+                            <p class="text-muted">Start shopping to see your order history here.</p>
+                            <a href="{{ url_for('customer_purchase') }}" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i> Start Shopping
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('customer_purchase') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-shopping-cart"></i><br>
+                                Start Shopping
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('customer_products') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-boxes"></i><br>
+                                Browse Products
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('customer_transactions') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-history"></i><br>
+                                Order History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

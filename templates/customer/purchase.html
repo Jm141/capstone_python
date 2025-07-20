@@ -1,0 +1,236 @@
+{% extends "base_pos.html" %}
+
+{% block title %}Purchase Products - Sari-Sari Store POS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-shopping-cart"></i> Purchase Products
+        </h1>
+    </div>
+
+    <form method="POST">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-boxes"></i> Available Products
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if products %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">
+                                                <input type="checkbox" id="select-all" class="form-check-input">
+                                            </th>
+                                            <th>Product</th>
+                                            <th>SKU</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for product in products %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="products" value="{{ product[0] }}" 
+                                                       class="form-check-input product-checkbox" 
+                                                       data-price="{{ product[4] }}" 
+                                                       data-stock="{{ product[3] }}">
+                                            </td>
+                                            <td>
+                                                <strong>{{ product[1] }}</strong>
+                                            </td>
+                                            <td>{{ product[2] }}</td>
+                                            <td>₱{{ "%.2f"|format(product[4]) }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if product[3] > 10 else 'warning' if product[3] > 0 else 'danger' }}">
+                                                    {{ product[3] }} in stock
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="quantity_{{ product[0] }}" 
+                                                       class="form-control quantity-input" 
+                                                       min="1" max="{{ product[3] }}" value="1" 
+                                                       style="width: 80px;" disabled>
+                                            </td>
+                                            <td>
+                                                <span class="subtotal">₱{{ "%.2f"|format(product[4]) }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-info-circle"></i> Instructions
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Check the boxes next to products you want to purchase</li>
+                                                <li>Adjust quantities using the number inputs</li>
+                                                <li>Review your order summary on the right</li>
+                                                <li>Click "Complete Purchase" when ready</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-receipt"></i> Order Summary
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="order-summary">
+                                                <p class="text-muted">Select products to see order summary</p>
+                                            </div>
+                                            <hr>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary btn-lg" id="purchase-btn" disabled>
+                                                    <i class="fas fa-shopping-cart"></i> Complete Purchase
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No products available</h5>
+                                <p class="text-muted">Please check back later for available products.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Select all functionality
+    $('#select-all').change(function() {
+        $('.product-checkbox').prop('checked', this.checked);
+        $('.product-checkbox').trigger('change');
+    });
+
+    // Individual checkbox functionality
+    $('.product-checkbox').change(function() {
+        var isChecked = $(this).is(':checked');
+        var quantityInput = $(this).closest('tr').find('.quantity-input');
+        
+        if (isChecked) {
+            quantityInput.prop('disabled', false);
+        } else {
+            quantityInput.prop('disabled', true);
+            quantityInput.val(1);
+        }
+        
+        updateOrderSummary();
+        updatePurchaseButton();
+    });
+
+    // Quantity input functionality
+    $('.quantity-input').on('input', function() {
+        updateOrderSummary();
+    });
+
+    function updateOrderSummary() {
+        var total = 0;
+        var items = [];
+        
+        $('.product-checkbox:checked').each(function() {
+            var row = $(this).closest('tr');
+            var productName = row.find('td:eq(1) strong').text();
+            var price = parseFloat($(this).data('price'));
+            var quantity = parseInt(row.find('.quantity-input').val()) || 1;
+            var subtotal = price * quantity;
+            
+            total += subtotal;
+            items.push({
+                name: productName,
+                quantity: quantity,
+                price: price,
+                subtotal: subtotal
+            });
+        });
+
+        if (items.length > 0) {
+            var summaryHtml = '<div class="mb-3">';
+            items.forEach(function(item) {
+                summaryHtml += `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>${item.name} (${item.quantity}x)</span>
+                        <span>₱${item.subtotal.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            summaryHtml += '</div>';
+            summaryHtml += `
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Total:</span>
+                    <span>₱${total.toFixed(2)}</span>
+                </div>
+            `;
+            $('#order-summary').html(summaryHtml);
+        } else {
+            $('#order-summary').html('<p class="text-muted">Select products to see order summary</p>');
+        }
+    }
+
+    function updatePurchaseButton() {
+        var checkedCount = $('.product-checkbox:checked').length;
+        $('#purchase-btn').prop('disabled', checkedCount === 0);
+    }
+
+    // Form validation
+    $('form').submit(function(e) {
+        var checkedProducts = $('.product-checkbox:checked');
+        if (checkedProducts.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one product to purchase.');
+            return false;
+        }
+
+        // Validate quantities
+        var isValid = true;
+        checkedProducts.each(function() {
+            var row = $(this).closest('tr');
+            var quantity = parseInt(row.find('.quantity-input').val());
+            var stock = parseInt($(this).data('stock'));
+            
+            if (quantity > stock) {
+                isValid = false;
+                alert('Quantity cannot exceed available stock.');
+                return false;
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %} 
